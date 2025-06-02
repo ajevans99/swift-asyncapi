@@ -3,7 +3,7 @@ format:
 	@echo "Swift code formatted successfully."
 
 lint:
-	@swiftlint lint --strict --parallel --recursive Sources/ Tests/
+	@swift-format lint --strict --parallel --recursive Sources/ Tests/
 	@echo "Swift code linted successfully."
 
 test:
