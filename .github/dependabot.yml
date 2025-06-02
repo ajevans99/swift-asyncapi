@@ -7,11 +7,4 @@ updates:
       day: "monday"
     labels:
       - "dependencies"
-      - "swift"
-    versioning-strategy: auto
     open-pull-requests-limit: 10
-    rebase-strategy: auto
-    groups:
-      dependencies:
-        patterns:
-          - "*" 
