@@ -736,7 +736,7 @@ extension AsyncAPI.Server {
         try container.encodeIfPresent(description, forKey: .description)
         try container.encode(name, forKey: .name)
         try container.encode(in_, forKey: .in)
-      case .X509(let description):
+      case .x509(let description):
         try container.encode("X509", forKey: .type)
         try container.encodeIfPresent(description, forKey: .description)
       case .symmetricEncryption(let description, let scheme):
@@ -747,7 +747,7 @@ extension AsyncAPI.Server {
         try container.encode("asymmetricEncryption", forKey: .type)
         try container.encodeIfPresent(description, forKey: .description)
         try container.encode(scheme, forKey: .scheme)
-      case .HTTPSecurityScheme(let description, let scheme, let bearerFormat):
+      case .httpSecurityScheme(let description, let scheme, let bearerFormat):
         try container.encode("http", forKey: .type)
         try container.encodeIfPresent(description, forKey: .description)
         try container.encode(scheme, forKey: .scheme)
