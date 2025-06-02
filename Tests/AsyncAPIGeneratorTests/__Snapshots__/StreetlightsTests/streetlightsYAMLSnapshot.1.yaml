@@ -1,0 +1,239 @@
+asyncapi: 3.0.0
+channels:
+  lightTurnOff:
+    address: smartylighting.streetlights.1.0.action.{streetlightId}.turn.off
+    messages:
+      turnOff:
+        $ref: '#/components/messages/turnOff'
+    parameters:
+      streetlightId:
+        $ref: '#/components/parameters/streetlightId'
+  lightTurnOn:
+    address: smartylighting.streetlights.1.0.action.{streetlightId}.turn.on
+    messages:
+      turnOn:
+        $ref: '#/components/messages/turnOn'
+    parameters:
+      streetlightId:
+        $ref: '#/components/parameters/streetlightId'
+  lightingMeasured:
+    address: smartylighting.streetlights.1.0.event.{streetlightId}.lighting.measured
+    description: The topic on which measured values may be produced and consumed.
+    messages:
+      lightMeasured:
+        $ref: '#/components/messages/lightMeasured'
+    parameters:
+      streetlightId:
+        $ref: '#/components/parameters/streetlightId'
+  lightsDim:
+    address: smartylighting.streetlights.1.0.action.{streetlightId}.dim
+    messages:
+      dimLight:
+        $ref: '#/components/messages/dimLight'
+    parameters:
+      streetlightId:
+        $ref: '#/components/parameters/streetlightId'
+components:
+  messageTraits:
+    commonHeaders:
+      headers:
+        properties:
+          my-app-header:
+            maximum: 100
+            minimum: 0
+            type: integer
+        type: object
+  messages:
+    dimLight:
+      name: dimLight
+      payload:
+        properties:
+          percentage:
+            description: Percentage to which the light should be dimmed to.
+            maximum: 100
+            minimum: 0
+            type: integer
+          sentAt:
+            description: Date and time when the message was sent.
+            format: date-time
+            type: string
+        type: object
+      summary: Command a particular streetlight to dim the lights.
+      title: Dim light
+    lightMeasured:
+      contentType: application/json
+      name: lightMeasured
+      payload:
+        properties:
+          lumens:
+            description: Light intensity measured in lumens.
+            minimum: 0
+            type: integer
+          sentAt:
+            description: Date and time when the message was sent.
+            format: date-time
+            type: string
+        type: object
+      summary: Inform about environmental lighting conditions of a particular streetlight.
+      title: Light measured
+    turnOnOff:
+      name: turnOnOff
+      payload:
+        properties:
+          command:
+            description: Whether to turn on or off the light.
+            enum:
+            - 'on'
+            - 'off'
+            type: string
+          sentAt:
+            description: Date and time when the message was sent.
+            format: date-time
+            type: string
+        type: object
+      summary: Command a particular streetlight to turn the lights on or off.
+      title: Turn on/off
+  operationTraits:
+    kafka:
+      bindings:
+        kafka:
+          clientId:
+            enum:
+            - my-app-id
+            type: string
+  parameters:
+    streetlightId:
+      description: The ID of the streetlight.
+  schemas:
+    dimLightPayload:
+      properties:
+        percentage:
+          description: Percentage to which the light should be dimmed to.
+          maximum: 100
+          minimum: 0
+          type: integer
+        sentAt:
+          description: Date and time when the message was sent.
+          format: date-time
+          type: string
+      type: object
+    lightMeasuredPayload:
+      properties:
+        lumens:
+          description: Light intensity measured in lumens.
+          minimum: 0
+          type: integer
+        sentAt:
+          description: Date and time when the message was sent.
+          format: date-time
+          type: string
+      type: object
+    sentAt:
+      description: Date and time when the message was sent.
+      format: date-time
+      type: string
+    turnOnOffPayload:
+      properties:
+        command:
+          description: Whether to turn on or off the light.
+          enum:
+          - 'on'
+          - 'off'
+          type: string
+        sentAt:
+          description: Date and time when the message was sent.
+          format: date-time
+          type: string
+      type: object
+  securitySchemes:
+    certs:
+      description: Download the certificate files from service provider
+      type: X509
+    saslScram:
+      description: Provide your username and password for SASL/SCRAM authentication
+      type: scramSha256
+defaultContentType: application/json
+info:
+  description: "The Smartylighting Streetlights API allows you to remotely manage
+    the city\nlights.\n### Check out its awesome features:\n\n* Turn a specific streetlight
+    on/off \U0001F303  \n* Dim a specific streetlight \U0001F60E\n* Receive real-time
+    information about environmental lighting conditions \U0001F4C8"
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  title: Streetlights Kafka API
+  version: 1.0.0
+operations:
+  dimLight:
+    action: send
+    channel:
+      $ref: '#/channels/lightsDim'
+    description: A command sent to dim the lights.
+    messages:
+    - $ref: '#/components/messages/dimLight'
+    summary: Command a particular streetlight to dim the lights.
+    title: Dim light
+    traits:
+    - $ref: '#/components/operationTraits/kafka'
+  receiveLightMeasurement:
+    action: receive
+    channel:
+      $ref: '#/channels/lightingMeasured'
+    description: A message sent when a streetlight measurement is received.
+    messages:
+    - $ref: '#/components/messages/lightMeasured'
+    summary: Inform about environmental lighting conditions of a particular streetlight.
+    title: Receive light measurement
+    traits:
+    - $ref: '#/components/operationTraits/kafka'
+  turnOff:
+    action: send
+    channel:
+      $ref: '#/channels/lightTurnOff'
+    description: A command sent to turn the light off.
+    messages:
+    - $ref: '#/components/messages/turnOff'
+    summary: Command a particular streetlight to turn the lights off.
+    title: Turn off
+    traits:
+    - $ref: '#/components/operationTraits/kafka'
+  turnOn:
+    action: send
+    channel:
+      $ref: '#/channels/lightTurnOn'
+    description: A command sent to turn the light on.
+    messages:
+    - $ref: '#/components/messages/turnOn'
+    summary: Command a particular streetlight to turn the lights on.
+    title: Turn on
+    traits:
+    - $ref: '#/components/operationTraits/kafka'
+servers:
+  mtls-connections:
+    description: Test broker secured with X509
+    host: test.mykafkacluster.org:28092
+    protocol: kafka-secure
+    security:
+    - $ref: '#/components/securitySchemes/certs'
+    tags:
+    - descrtion: This environment is meant for running internal tests through mtls
+      name: env:test-mtls
+    - descrtion: This server is a remote server. Not exposed by the application
+      name: kind:remote
+    - descrtion: This resource is private and only available to certain users
+      name: visibility:private
+    title: Test MQTT broker
+  scram-connections:
+    description: Test broker secured with scramSha256
+    host: test.mykafkacluster.org:18092
+    protocol: kafka-secure
+    security:
+    - $ref: '#/components/securitySchemes/saslScram'
+    tags:
+    - descrtion: This environment is meant for running internal tests through scramSha256
+      name: env:test-scram
+    - descrtion: This server is a remote server. Not exposed by the application
+      name: kind:remote
+    - descrtion: This resource is private and only available to certain users
+      name: visibility:private
+    title: Test MQTT broker

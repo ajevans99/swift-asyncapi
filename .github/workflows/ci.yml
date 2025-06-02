@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: macos-15
+
+    name: Build and Test on macOS with Swift 6.0
+    steps:
+    - uses: actions/checkout@v4
+    - name: Xcode setup
+      uses: ./.github/actions/xcode-setup
+    - name: Xcode version
+      run: xcodebuild -version
+      if: ${{ always() }}
+    - name: Log Xcode versions
+      run: ls -l /Applications/Xcode*
+      if: ${{ failure() }}
+    - name: Get swift version
+      run: swift --version
+    - name: Build
+      run: swift build -v
+    - name: Run tests
+      run: swift test
+  
+  build_linux:
+    name: Build on Linux
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Get swift version
+      run: swift --version
+    - name: Delete Package.resolved
+      run: rm -f Package.resolved
+    - name: Build
+      run: swift build -v
+
+  build_apple_platforms:
+    name: Build on Apple Platforms
+    runs-on: macos-15
+    strategy:
+        fail-fast: false
+        matrix:
+            platform: [macOS, iOS, watchOS, tvOS, visionOS]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Xcode setup
+      uses: ./.github/actions/xcode-setup
+    - name: Get swift version
+      run: swift --version
+    - name: Get Xcode version
+      run: xcodebuild -version
+    - name: Build ${{ matrix.platform }}
+      run: set -o pipefail && xcodebuild build -destination generic/platform=${{ matrix.platform }} -scheme swift-json-schema-Package | xcbeautify --renderer github-actions
