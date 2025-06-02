@@ -290,7 +290,7 @@ struct StreetlightsTests {
           description: "Provide your username and password for SASL/SCRAM authentication",
           type: "scramSha256"
         ),
-        "certs": .X509(
+        "certs": .x509(
           description: "Download the certificate files from service provider"
         ),
       ],

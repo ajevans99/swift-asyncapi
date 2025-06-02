@@ -652,13 +652,13 @@ extension AsyncAPI.Server {
     /// API key security scheme.
     case apiKey(description: String?, name: String, in: String)
     /// X509 security scheme.
-    case X509(description: String?)
+    case x509(description: String?)
     /// Symmetric encryption security scheme.
     case symmetricEncryption(description: String?, scheme: String)
     /// Asymmetric encryption security scheme.
     case asymmetricEncryption(description: String?, scheme: String)
     /// HTTP security scheme.
-    case HTTPSecurityScheme(description: String?, scheme: String, bearerFormat: String?)
+    case httpSecurityScheme(description: String?, scheme: String, bearerFormat: String?)
     /// OAuth2 flows security scheme.
     case oauth2Flows(description: String?, flows: OAuth2Flows)
     /// OpenID Connect security scheme.
@@ -688,10 +688,10 @@ extension AsyncAPI.Server {
         self = .userPassword(description: description, scheme: scheme)
       case "apiKey":
         let name = try container.decode(String.self, forKey: .name)
-        let in_ = try container.decode(String.self, forKey: .in)
-        self = .apiKey(description: description, name: name, in: in_)
+        let `in` = try container.decode(String.self, forKey: .in)
+        self = .apiKey(description: description, name: name, in: `in`)
       case "X509":
-        self = .X509(description: description)
+        self = .x509(description: description)
       case "symmetricEncryption":
         let scheme = try container.decode(String.self, forKey: .scheme)
         self = .symmetricEncryption(description: description, scheme: scheme)
@@ -701,7 +701,7 @@ extension AsyncAPI.Server {
       case "http":
         let scheme = try container.decode(String.self, forKey: .scheme)
         let bearerFormat = try container.decodeIfPresent(String.self, forKey: .bearerFormat)
-        self = .HTTPSecurityScheme(
+        self = .httpSecurityScheme(
           description: description,
           scheme: scheme,
           bearerFormat: bearerFormat
