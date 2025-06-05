@@ -1,0 +1,16 @@
+asyncapi: 2.6.0
+channels:
+  chat.message.{roomId}:
+    address: chat.message.{roomId}
+defaultContentType: application/json
+info:
+  description: AsyncAPI example
+  tags:
+  - name: chat
+  title: Chat Service
+  version: 1.0.0
+servers:
+  wss://chat.example.com/ws:
+    description: Production broker
+    host: wss://chat.example.com/ws
+    protocol: wss

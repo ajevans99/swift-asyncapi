@@ -1,0 +1,22 @@
+{
+  "configurations": [
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:vapor-asyncapi}",
+      "name": "Debug RuntimeRegistryDumper",
+      "program": "${workspaceFolder:vapor-asyncapi}/.build/debug/RuntimeRegistryDumper",
+      "preLaunchTask": "swift: Build Debug RuntimeRegistryDumper"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:vapor-asyncapi}",
+      "name": "Release RuntimeRegistryDumper",
+      "program": "${workspaceFolder:vapor-asyncapi}/.build/release/RuntimeRegistryDumper",
+      "preLaunchTask": "swift: Build Release RuntimeRegistryDumper"
+    }
+  ]
+}
