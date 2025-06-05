@@ -5,6 +5,7 @@ public actor RuntimeRegistry {
   private init() {}
 
   private var document: AsyncAPI?
+  private var operations: [String: OperationRuntime] = [:]
 
   public func setDocument(_ document: AsyncAPI) {
     self.document = document
@@ -12,5 +13,13 @@ public actor RuntimeRegistry {
 
   public func getDocument() -> AsyncAPI? {
     document
+  }
+
+  public func registerOperation(_ key: String, runtime: OperationRuntime) {
+    operations[key] = runtime
+  }
+
+  public func operationRuntime(for key: String) -> OperationRuntime? {
+    operations[key]
   }
 }
