@@ -16,7 +16,11 @@ let package = Package(
     .library(
       name: "AsyncAPIGenerator",
       targets: ["AsyncAPIGenerator"]
-    )
+    ),
+    .library(
+      name: "AsyncAPIBuilder",
+      targets: ["AsyncAPIBuilder"]
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/ajevans99/swift-json-schema.git", from: "0.5.1"),
@@ -31,6 +35,12 @@ let package = Package(
         .product(name: "JSONSchemaBuilder", package: "swift-json-schema"),
       ]
     ),
+    .target(
+      name: "AsyncAPIBuilder",
+      dependencies: [
+        "AsyncAPIGenerator"
+      ]
+    ),
     .testTarget(
       name: "AsyncAPIGeneratorTests",
       dependencies: [
@@ -40,10 +50,20 @@ let package = Package(
         .product(name: "Yams", package: "Yams"),
       ],
       exclude: [
-        "__Snapshots__",
+        "__Snapshots__"
       ],
       resources: [
         .process("Resources")
+      ]
+    ),
+    .testTarget(
+      name: "AsyncAPIBuilderTests",
+      dependencies: [
+        "AsyncAPIBuilder",
+        "AsyncAPIGenerator",
+        .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+        .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
+        .product(name: "Yams", package: "Yams"),
       ]
     ),
   ]
