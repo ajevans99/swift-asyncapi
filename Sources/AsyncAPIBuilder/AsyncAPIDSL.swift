@@ -14,6 +14,9 @@ public enum AsyncAPIDSL {
         builder.servers[server.key] = server.finish()
       case .channel(let channel):
         builder.channels[channel.key] = channel.finish()
+        for (opKey, op) in channel.operations {
+          builder.operations[opKey] = op
+        }
       case .operation(let operation):
         builder.operations[operation.key] = operation.finish()
       }
@@ -165,17 +168,26 @@ public struct Server {
 // MARK: - Channel
 public struct Channel {
   let key: String
-  private let address: String
+  private let builder: ChannelBuilder
 
   public init(key: String, address: String) {
     self.key = key
-    self.address = address
+    self.builder = ChannelBuilder(address: address)
+  }
+
+  public init(_ address: String, build: (inout ChannelBuilder) -> Void) {
+    self.key = address
+    var b = ChannelBuilder(address: address)
+    build(&b)
+    self.builder = b
+  }
+
+  var operations: [String: AsyncAPI.Operation] {
+    builder.buildOperations(channelKey: key)
   }
 
   public func finish() -> AsyncAPI.Channel {
-    AsyncAPI.Channel(
-      address: address
-    )
+    builder.finish()
   }
 }
 
