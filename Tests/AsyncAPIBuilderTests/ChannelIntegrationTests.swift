@@ -6,7 +6,7 @@ import Testing
 struct ChannelIntegrationTests {
   struct ChatParams: ChannelParameterDecodable {
     let roomId: UUID
-    init(from params: [String : String]) throws {
+    init(from params: [String: String]) throws {
       guard let raw = params["roomId"], let uuid = UUID(uuidString: raw) else {
         throw NSError(domain: "ChannelIntegration", code: 1)
       }
@@ -15,8 +15,14 @@ struct ChannelIntegrationTests {
   }
 
   final class RecordingBinder: TransportBinder, @unchecked Sendable {
-    var records: [(server: AsyncAPI.Server, channel: AsyncAPI.Channel, action: AsyncAPI.Action)] = []
-    func bind(server: AsyncAPI.Server, channel: AsyncAPI.Channel, operation: AsyncAPI.Operation, using binderContext: BinderContext) throws {
+    var records: [(server: AsyncAPI.Server, channel: AsyncAPI.Channel, action: AsyncAPI.Action)] =
+      []
+    func bind(
+      server: AsyncAPI.Server,
+      channel: AsyncAPI.Channel,
+      operation: AsyncAPI.Operation,
+      using binderContext: BinderContext
+    ) throws {
       records.append((server, channel, operation.action))
     }
   }

@@ -4,7 +4,12 @@ import Testing
 
 struct BinderRegistryTests {
   struct DummyBinder: TransportBinder {
-    func bind(server: AsyncAPI.Server, channel: AsyncAPI.Channel, operation: AsyncAPI.Operation, using binderContext: BinderContext) throws {
+    func bind(
+      server: AsyncAPI.Server,
+      channel: AsyncAPI.Channel,
+      operation: AsyncAPI.Operation,
+      using binderContext: BinderContext
+    ) throws {
     }
   }
 

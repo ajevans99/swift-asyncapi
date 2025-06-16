@@ -6,7 +6,7 @@ import Testing
 struct ChannelDSLTests {
   struct RoomParams: ChannelParameterDecodable {
     let id: UUID
-    init(from params: [String : String]) throws {
+    init(from params: [String: String]) throws {
       guard let raw = params["id"], let uuid = UUID(uuidString: raw) else {
         throw NSError(domain: "ChannelDSL", code: 1)
       }
