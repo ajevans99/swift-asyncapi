@@ -6,6 +6,9 @@
 
 A Swift library for generating [AsyncAPI](https://www.asyncapi.com) documents.
 
+> [!IMPORTANT]
+> Work in progress.
+
 ## Usage
 
 ### Basic Example
@@ -71,7 +74,7 @@ Add the package to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/yourusername/swift-asyncapi.git", from: "0.1.0")
+    .package(url: "https://github.com/ajevans99/swift-asyncapi.git", from: "0.1.0")
 ]
 ```
 
