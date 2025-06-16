@@ -1,0 +1,27 @@
+asyncapi: 3.0.0
+channels:
+  chat.message.{roomId}:
+    address: chat.message.{roomId}
+info:
+  description: AsyncAPI example
+  tags:
+  - name: chat
+  title: Chat Service
+  version: 1.0.0
+operations:
+  sendMessage:
+    action: send
+    channel:
+      $ref: '#/channels/chat.message.{roomId}'
+    description: Send a message to a specific chat room
+    summary: Send a message to a chat room
+    tags:
+    - name: chat
+    - name: message
+    traits:
+    - $ref: '#/components/operationTraits/kafka'
+servers:
+  production:
+    description: Production broker
+    host: wss://chat.example.com/ws
+    protocol: wss

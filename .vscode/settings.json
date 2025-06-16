@@ -1,0 +1,10 @@
+{
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "[swift]": {
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2
+    },
+    "git.autoRepositoryDetection": false,
+}
