@@ -1,4 +1,5 @@
 {
+  "originHash" : "011b206cdc9b4d2f492108312ab2619f8a79ec20783545280987cdb33a45762f",
   "pins" : [
     {
       "identity" : "swift-custom-dump",
@@ -14,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajevans99/swift-json-schema.git",
       "state" : {
-        "revision" : "665e044e2da7ab7841b149a455794866a9cc1c8d",
-        "version" : "0.5.1"
+        "revision" : "f777cbae01d668ee47953628f5bc0c515f7dd06a",
+        "version" : "0.7.3"
       }
     },
     {
@@ -55,5 +56,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
