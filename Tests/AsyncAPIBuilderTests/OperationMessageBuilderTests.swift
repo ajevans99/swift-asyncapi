@@ -15,8 +15,9 @@ struct OperationMessageBuilderTests {
       Info(title: "Test", version: "1.0")
       Operation(key: "ping", action: .send)
         .channel(AsyncAPI.Channel(address: "ping"))
-        .messages([Message(key: "pingMsg")
-          .payload(PingPayload.self)
+        .messages([
+          Message(key: "pingMsg")
+            .payload(PingPayload.self)
         ])
     }
 

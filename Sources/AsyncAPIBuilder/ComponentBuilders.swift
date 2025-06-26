@@ -52,13 +52,13 @@ public struct Schema {
   func finish() -> JSONValue { value }
 }
 
-public extension Schema {
+extension Schema {
   /// Create a schema component using a type conforming to ``Schemable``.
   ///
   /// - Parameters:
   ///   - key: The components dictionary key.
   ///   - type: The ``Schemable`` type describing the JSON Schema.
-  init<T: Schemable>(key: String, for type: T.Type) {
+  public init<T: Schemable>(key: String, for type: T.Type) {
     self.key = key
     self.value = type.schema.schemaValue.value
   }
@@ -193,8 +193,8 @@ public struct Message {
   }
 }
 
-public extension SchemaValue {
-  var jsonValue: JSONValue {
+extension SchemaValue {
+  public var jsonValue: JSONValue {
     switch self {
     case .boolean(let bool): return .boolean(bool)
     case .object(let dict): return .object(dict)
@@ -202,7 +202,7 @@ public extension SchemaValue {
   }
 }
 
-public extension Schemable {
+extension Schemable {
   /// The generated JSON Schema for this type as a ``JSONValue``.
-  static var jsonSchema: JSONValue { schema.schemaValue.value }
+  public static var jsonSchema: JSONValue { schema.schemaValue.value }
 }

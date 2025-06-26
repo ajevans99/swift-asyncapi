@@ -1,5 +1,5 @@
-import AsyncAPIGenerator
 import AsyncAPIBuilder
+import AsyncAPIGenerator
 import Foundation
 import InlineSnapshotTesting
 import JSONSchema
