@@ -39,7 +39,8 @@ let package = Package(
       name: "AsyncAPIBuilder",
       dependencies: [
         "AsyncAPIGenerator",
-        .product(name: "JSONSchema", package: "swift-json-schema")
+        .product(name: "JSONSchema", package: "swift-json-schema"),
+        .product(name: "JSONSchemaBuilder", package: "swift-json-schema")
       ]
     ),
     .testTarget(

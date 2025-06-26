@@ -1,5 +1,6 @@
 import AsyncAPIGenerator
 import JSONSchema
+import JSONSchemaBuilder
 
 @resultBuilder
 public enum AsyncAPIDSL {
@@ -19,6 +20,10 @@ public enum AsyncAPIDSL {
         }
       case .operation(let operation):
         builder.operations[operation.key] = operation.finish()
+      case .message(let message):
+        builder.componentsBuilder.addMessage(message)
+      case .schema(let schema):
+        builder.componentsBuilder.addSchema(schema)
       }
     }
 
@@ -40,6 +45,14 @@ public enum AsyncAPIDSL {
   public static func buildExpression(_ operation: Operation) -> AsyncAPIComponent {
     .operation(operation)
   }
+
+  public static func buildExpression(_ message: Message) -> AsyncAPIComponent {
+    .message(message)
+  }
+
+  public static func buildExpression(_ schema: Schema) -> AsyncAPIComponent {
+    .schema(schema)
+  }
 }
 
 public enum AsyncAPIComponent {
@@ -47,6 +60,8 @@ public enum AsyncAPIComponent {
   case server(Server)
   case channel(Channel)
   case operation(Operation)
+  case message(Message)
+  case schema(Schema)
 }
 
 public struct AsyncAPIDocument {
@@ -65,7 +80,7 @@ public struct AsyncAPIBuilder {
   var defaultContentType: String?
   var channels: [String: AsyncAPI.Channel] = [:]
   var operations: [String: AsyncAPI.Operation] = [:]
-  var components: AsyncAPI.Components?
+  var componentsBuilder = ComponentsBuilder()
 
   public init(version: String = "3.0.0") {
     self.asyncapi = version
@@ -93,7 +108,7 @@ public struct AsyncAPIBuilder {
       defaultContentType: defaultContentType,
       channels: channels.isEmpty ? nil : channels,
       operations: operations.isEmpty ? nil : operations,
-      components: components
+      components: componentsBuilder.finish()
     )
   }
 }
@@ -227,6 +242,12 @@ public struct Operation {
   public func messages(_ messages: [AsyncAPI.Message]) -> Self {
     var copy = self
     copy.messages = messages.map { .value($0) }
+    return copy
+  }
+
+  public func messages(_ messages: [Message]) -> Self {
+    var copy = self
+    copy.messages = messages.map { .value($0.finish()) }
     return copy
   }
 

@@ -1,3 +1,4 @@
+import AsyncAPIBuilder
 import AsyncAPIGenerator
 import Foundation
 import InlineSnapshotTesting
@@ -104,19 +105,19 @@ struct MessageSchemaTests {
           "lightMeasured": .init(
             name: "lightMeasured",
             contentType: "application/json",
-            payload: LightMeasured.schema.schemaValue.value,
+            payload: LightMeasured.jsonSchema,
             title: "Light measured",
             summary: "Inform about environmental lighting conditions"
           ),
           "turnOnOff": .init(
             name: "turnOnOff",
-            payload: TurnOnOff.schema.schemaValue.value,
+            payload: TurnOnOff.jsonSchema,
             title: "Turn on/off",
             summary: "Command to turn the light on or off"
           ),
           "dimLight": .init(
             name: "dimLight",
-            payload: DimLight.schema.schemaValue.value,
+            payload: DimLight.jsonSchema,
             title: "Dim light",
             summary: "Command to dim the lights"
           ),

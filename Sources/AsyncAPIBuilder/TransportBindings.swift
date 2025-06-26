@@ -75,7 +75,8 @@ public func expandOperations(
 ) -> [AsyncAPI.Operation] {
   guard let operations = document.operations else { return [] }
   var result: [AsyncAPI.Operation] = []
-  for op in operations.values {
+  for key in operations.keys.sorted() {
+    let op = operations[key]!
     switch op.channel {
     case .reference(let ref):
       if ref == "#/channels/\(channel.address ?? "")" { result.append(op) }

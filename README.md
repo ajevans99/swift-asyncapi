@@ -37,7 +37,7 @@ let asyncAPI = AsyncAPI(
             "lightMeasured": .init(
                 name: "lightMeasured",
                 contentType: "application/json",
-                payload: LightMeasured.schema.schemaValue.value,
+                payload: LightMeasured.jsonSchema,
                 title: "Light measured",
                 summary: "Inform about environmental lighting conditions"
             )
