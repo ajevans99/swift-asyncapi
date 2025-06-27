@@ -2,56 +2,71 @@ import AsyncAPIGenerator
 import JSONSchema
 import JSONSchemaBuilder
 
+// MARK: AsyncAPI DSL  ─ one builder all the way down
 @resultBuilder
 public enum AsyncAPIDSL {
-  public static func buildBlock(_ components: AsyncAPIComponent...) -> AsyncAPI {
-    var builder = AsyncAPIBuilder()
+  public typealias Partial = AsyncAPIBuilder
 
-    for component in components {
-      switch component {
-      case .info(let info):
-        builder.info = info
-      case .server(let server):
-        builder.servers[server.key] = server.finish()
-      case .channel(let channel):
-        builder.channels[channel.key] = channel.finish()
-        for (opKey, op) in channel.operations {
-          builder.operations[opKey] = op
-        }
-      case .operation(let operation):
-        builder.operations[operation.key] = operation.finish()
-      case .message(let message):
-        builder.componentsBuilder.addMessage(message)
-      case .schema(let schema):
-        builder.componentsBuilder.addSchema(schema)
-      }
-    }
-
-    return builder.finish()
+  // leaf expressions
+  public static func buildExpression(_ info: Info) -> Partial {
+    var b = AsyncAPIBuilder()
+    b.info = info.finish()
+    return b
   }
 
-  public static func buildExpression(_ info: Info) -> AsyncAPIComponent {
-    .info(info.finish())
+  public static func buildExpression(_ server: Server) -> Partial {
+    var b = AsyncAPIBuilder()
+    b.servers[server.key] = server.finish()
+    return b
   }
 
-  public static func buildExpression(_ server: Server) -> AsyncAPIComponent {
-    .server(server)
+  public static func buildExpression(_ channel: Channel) -> Partial {
+    var b = AsyncAPIBuilder()
+    b.channels[channel.key] = channel.finish()
+    for (k, op) in channel.operations { b.operations[k] = op }
+    return b
   }
 
-  public static func buildExpression(_ channel: Channel) -> AsyncAPIComponent {
-    .channel(channel)
+  public static func buildExpression(_ op: Operation) -> Partial {
+    var b = AsyncAPIBuilder()
+    b.operations[op.key] = op.finish()
+    return b
   }
 
-  public static func buildExpression(_ operation: Operation) -> AsyncAPIComponent {
-    .operation(operation)
+  public static func buildExpression(_ msg: Message) -> Partial {
+    var b = AsyncAPIBuilder()
+    b.componentsBuilder.addMessage(msg)
+    return b
   }
 
-  public static func buildExpression(_ message: Message) -> AsyncAPIComponent {
-    .message(message)
+  public static func buildExpression(_ schema: Schema) -> Partial {
+    var b = AsyncAPIBuilder()
+    b.componentsBuilder.addSchema(schema)
+    return b
   }
 
-  public static func buildExpression(_ schema: Schema) -> AsyncAPIComponent {
-    .schema(schema)
+  // plain sequencing (comma-separated lines)
+  public static func buildBlock(_ parts: Partial...) -> Partial {
+    parts.reduce(into: AsyncAPIBuilder()) { $0.merge(with: $1) }
+  }
+
+  // `for … in` loops
+  public static func buildArray(_ parts: [Partial]) -> Partial {
+    parts.reduce(into: AsyncAPIBuilder()) { $0.merge(with: $1) }
+  }
+
+  // conditionals
+  public static func buildEither(first p: Partial) -> Partial { p }
+  public static func buildEither(second p: Partial) -> Partial { p }
+
+  // optional blocks
+  public static func buildOptional(_ p: Partial?) -> Partial {
+    p ?? AsyncAPIBuilder()
+  }
+
+  // final conversion
+  public static func buildFinalResult(_ b: Partial) -> AsyncAPI {
+    b.finish()
   }
 }
 
@@ -62,6 +77,32 @@ public enum AsyncAPIComponent {
   case operation(Operation)
   case message(Message)
   case schema(Schema)
+}
+
+extension AsyncAPIBuilder {
+  static func from(_ c: AsyncAPIComponent) -> Self {
+    var b = Self()
+    b.apply(c)
+    return b
+  }
+
+  mutating func apply(_ c: AsyncAPIComponent) {
+    switch c {
+    case .info(let info):
+      self.info = info
+    case .server(let s):
+      servers[s.key] = s.finish()
+    case .channel(let ch):
+      channels[ch.key] = ch.finish()
+      for (k, op) in ch.operations { operations[k] = op }
+    case .operation(let op):
+      operations[op.key] = op.finish()
+    case .message(let m):
+      componentsBuilder.addMessage(m)
+    case .schema(let s):
+      componentsBuilder.addSchema(s)
+    }
+  }
 }
 
 public struct AsyncAPIDocument {
@@ -97,6 +138,17 @@ public struct AsyncAPIBuilder {
     var copy = self
     copy.defaultContentType = contentType
     return copy
+  }
+
+  public mutating func merge(with other: AsyncAPIBuilder) {
+    if !other.info.title.isEmpty { info = other.info }
+    if let v = other.id { id = v }
+    if let v = other.defaultContentType { defaultContentType = v }
+
+    servers.merge(other.servers) { _, new in new }
+    channels.merge(other.channels) { _, new in new }
+    operations.merge(other.operations) { _, new in new }
+    componentsBuilder.merge(other.componentsBuilder)
   }
 
   public func finish() -> AsyncAPI {
