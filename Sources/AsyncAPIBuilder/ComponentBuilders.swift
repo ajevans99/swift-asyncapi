@@ -14,6 +14,11 @@ public struct ComponentsBuilder {
     messages[message.key] = message.finish()
   }
 
+  mutating func merge(_ other: ComponentsBuilder) {
+    schemas.merge(other.schemas, uniquingKeysWith: { $1 })
+    messages.merge(other.messages, uniquingKeysWith: { $1 })
+  }
+
   func finish() -> AsyncAPI.Components? {
     if schemas.isEmpty && messages.isEmpty { return nil }
     return AsyncAPI.Components(

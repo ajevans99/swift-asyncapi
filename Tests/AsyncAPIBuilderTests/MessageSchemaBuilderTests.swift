@@ -44,4 +44,16 @@ struct MessageSchemaBuilderTests {
     #expect(schema != nil)
     #expect(message?.payload != nil)
   }
+
+  @Test
+  func multipleSchemas() {
+    let doc = AsyncAPIDocument {
+      Info(title: "Chat", version: "1.0")
+      for index in 0 ..< 10 {
+        Schema(key: "ChatPayload\(index)", for: ChatPayload.self)
+      }
+    }
+
+    #expect(doc.asyncapi.components?.schemas?.count == 10)
+  }
 }
