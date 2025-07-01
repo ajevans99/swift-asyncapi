@@ -23,7 +23,10 @@ public enum AsyncAPIDSL {
   public static func buildExpression(_ channel: Channel) -> Partial {
     var b = AsyncAPIBuilder()
     b.channels[channel.key] = channel.finish()
-    for (k, op) in channel.operations { b.operations[k] = op }
+    for op in channel.operations {
+      let opWithChannel = op.channel(ref: "#/channels/\(channel.key)")
+      b.operations[op.key] = opWithChannel.finish()
+    }
     return b
   }
 
@@ -94,7 +97,10 @@ extension AsyncAPIBuilder {
       servers[s.key] = s.finish()
     case .channel(let ch):
       channels[ch.key] = ch.finish()
-      for (k, op) in ch.operations { operations[k] = op }
+      for op in ch.operations {
+        let opWithChannel = op.channel(ref: "#/channels/\(ch.key)")
+        operations[op.key] = opWithChannel.finish()
+      }
     case .operation(let op):
       operations[op.key] = op.finish()
     case .message(let m):
@@ -233,28 +239,46 @@ public struct Server {
 }
 
 // MARK: - Channel
+@resultBuilder
+public enum ChannelOperationDSL {
+  public static func buildExpression(_ op: Operation) -> [Operation] { [op] }
+  public static func buildBlock(_ parts: [Operation]...) -> [Operation] {
+    parts.flatMap { $0 }
+  }
+  public static func buildArray(_ parts: [[Operation]]) -> [Operation] {
+    parts.flatMap { $0 }
+  }
+  public static func buildEither(first p: [Operation]) -> [Operation] { p }
+  public static func buildEither(second p: [Operation]) -> [Operation] { p }
+  public static func buildOptional(_ p: [Operation]?) -> [Operation] { p ?? [] }
+  public static func buildFinalResult(_ ops: [Operation]) -> [Operation] { ops }
+}
+
 public struct Channel {
   let key: String
-  private let builder: ChannelBuilder
+  private let address: String
+  let operations: [Operation]
 
   public init(key: String, address: String) {
     self.key = key
-    self.builder = ChannelBuilder(address: address)
+    self.address = address
+    self.operations = []
   }
 
-  public init(_ address: String, build: (inout ChannelBuilder) -> Void) {
-    self.key = address
-    var b = ChannelBuilder(address: address)
-    build(&b)
-    self.builder = b
-  }
-
-  var operations: [String: AsyncAPI.Operation] {
-    builder.buildOperations(channelKey: key)
+  public init(
+    key: String,
+    address: String,
+    @ChannelOperationDSL _ operations: () -> [Operation]
+  ) {
+    self.key = key
+    self.address = address
+    self.operations = operations()
   }
 
   public func finish() -> AsyncAPI.Channel {
-    builder.finish()
+    AsyncAPI.Channel(
+      address: address
+    )
   }
 }
 
