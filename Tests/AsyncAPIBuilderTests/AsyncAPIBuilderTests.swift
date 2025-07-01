@@ -117,4 +117,45 @@ struct AsyncAPIBuilderTests {
     #expect(retrieved?.info.title == "Test Service")
     #expect(retrieved?.info.version == "1.0.0")
   }
+
+  @Test
+  func channelModifiers() {
+    let doc = AsyncAPIDocument {
+      Info(title: "Test", version: "1.0")
+
+      Channel(key: "c1", address: "addr")
+        .title("Title")
+        .summary("Sum")
+        .description("Desc")
+        .servers(refs: ["#/servers/s1"])
+        .tags([AsyncAPI.Tag(name: "tag")])
+        .externalDocs(AsyncAPI.ExternalDoc(url: "https://example.com"))
+        .bindings(["kafka": ["clientId": .string("id")]])
+        .messages(refs: ["m1": "#/components/messages/m1"])
+        .parameters(refs: ["id": "#/components/parameters/id"])
+    }
+
+    let channel = doc.asyncapi.channels?["c1"]
+    #expect(channel?.title == "Title")
+    #expect(channel?.summary == "Sum")
+    #expect(channel?.description == "Desc")
+    var serverRef = false
+    if let first = channel?.servers?.first, case .reference(let ref) = first {
+      serverRef = ref == "#/servers/s1"
+    }
+    #expect(serverRef)
+    #expect(channel?.tags?.first?.name == "tag")
+    #expect(channel?.externalDocs?.url == "https://example.com")
+    #expect(channel?.bindings != nil)
+    var msgRef = false
+    if let m = channel?.messages?["m1"], case .reference(let ref) = m {
+      msgRef = ref == "#/components/messages/m1"
+    }
+    #expect(msgRef)
+    var paramRef = false
+    if let p = channel?.parameters?["id"], case .reference(let ref) = p {
+      paramRef = ref == "#/components/parameters/id"
+    }
+    #expect(paramRef)
+  }
 }
