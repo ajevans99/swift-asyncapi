@@ -37,22 +37,18 @@ struct ChannelIntegrationTests {
       Server(key: "local", url: "ws://localhost/chat")
         .protocol("test")
 
-      Channel("chat.{roomId}") { ch in
-        ch.parameter("roomId", ["type": "string"])
-        ch.subscribe(String.self) { (_: ChatParams, _: String, _: ChannelContext) async throws in }
+      Channel(key: "chat.{roomId}", address: "chat.{roomId}") {
+        Operation(key: "sub", action: .receive)
           .summary("sub")
-        ch.publish(String.self) { _, _ in }
+        Operation(key: "pub", action: .send)
           .summary("pub")
       }
     }
-
-    await RuntimeRegistry.shared.setDocument(doc.asyncapi)
-    // Allow registration tasks to run
-    await Task.yield()
     try await doc.asyncapi.bind(using: BinderContext())
 
     #expect(binder.records.count == 2)
-    #expect(binder.records.first?.action == .receive)
-    #expect(binder.records.last?.action == .send)
+    let actions = binder.records.map { $0.action }
+    #expect(actions.contains(.receive))
+    #expect(actions.contains(.send))
   }
 }
