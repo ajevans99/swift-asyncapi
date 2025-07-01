@@ -258,6 +258,15 @@ public struct Channel {
   let key: String
   private let address: String
   let operations: [Operation]
+  private var title: String?
+  private var summary: String?
+  private var description: String?
+  private var servers: [ReferenceOr<AsyncAPI.Server>]?
+  private var tags: [AsyncAPI.Tag]?
+  private var externalDocs: AsyncAPI.ExternalDoc?
+  private var bindings: JSONValue?
+  private var messages: [String: ReferenceOr<AsyncAPI.Message>]?
+  private var parameters: [String: ReferenceOr<AsyncAPI.Parameter>]?
 
   public init(key: String, address: String) {
     self.key = key
@@ -275,9 +284,102 @@ public struct Channel {
     self.operations = operations()
   }
 
+  public func title(_ title: String) -> Self {
+    var copy = self
+    copy.title = title
+    return copy
+  }
+
+  public func summary(_ summary: String) -> Self {
+    var copy = self
+    copy.summary = summary
+    return copy
+  }
+
+  public func description(_ description: String) -> Self {
+    var copy = self
+    copy.description = description
+    return copy
+  }
+
+  public func servers(_ servers: [AsyncAPI.Server]) -> Self {
+    var copy = self
+    copy.servers = servers.map { .value($0) }
+    return copy
+  }
+
+  public func servers(refs: [String]) -> Self {
+    var copy = self
+    copy.servers = refs.map { .reference($0) }
+    return copy
+  }
+
+  public func tags(_ tags: [AsyncAPI.Tag]) -> Self {
+    var copy = self
+    copy.tags = tags
+    return copy
+  }
+
+  public func externalDocs(_ externalDocs: AsyncAPI.ExternalDoc) -> Self {
+    var copy = self
+    copy.externalDocs = externalDocs
+    return copy
+  }
+
+  public func bindings(_ bindings: JSONValue) -> Self {
+    var copy = self
+    copy.bindings = bindings
+    return copy
+  }
+
+  public func messages(_ messages: [String: AsyncAPI.Message]) -> Self {
+    var copy = self
+    copy.messages = messages.mapValues { .value($0) }
+    return copy
+  }
+
+  public func messages(_ messages: [Message]) -> Self {
+    var copy = self
+    copy.messages = Dictionary(uniqueKeysWithValues: messages.map { ($0.key, .value($0.finish())) })
+    return copy
+  }
+
+  public func messages(refs: [String: String]) -> Self {
+    var copy = self
+    copy.messages = refs.mapValues { .reference($0) }
+    return copy
+  }
+
+  public func parameters(_ parameters: [String: AsyncAPI.Parameter]) -> Self {
+    var copy = self
+    copy.parameters = parameters.mapValues { .value($0) }
+    return copy
+  }
+
+  public func parameters(_ parameters: [String: Parameter]) -> Self {
+    var copy = self
+    copy.parameters = parameters.mapValues { .value($0.finish()) }
+    return copy
+  }
+
+  public func parameters(refs: [String: String]) -> Self {
+    var copy = self
+    copy.parameters = refs.mapValues { .reference($0) }
+    return copy
+  }
+
   public func finish() -> AsyncAPI.Channel {
     AsyncAPI.Channel(
-      address: address
+      address: address,
+      title: title,
+      summary: summary,
+      description: description,
+      servers: servers,
+      tags: tags,
+      externalDocs: externalDocs,
+      bindings: bindings,
+      messages: messages,
+      parameters: parameters
     )
   }
 }
@@ -407,6 +509,50 @@ public struct Operation {
       tags: tags,
       externalDocs: externalDocs,
       bindings: bindings
+    )
+  }
+}
+
+public struct Parameter {
+  private var description: String?
+  private var schema: JSONValue?
+  private var location: String?
+
+  public init() {}
+
+  public func description(_ description: String) -> Self {
+    var copy = self
+    copy.description = description
+    return copy
+  }
+
+  public func schema(_ schema: JSONValue) -> Self {
+    var copy = self
+    copy.schema = schema
+    return copy
+  }
+
+  public func schema(@JSONSchemaBuilder _ build: () -> some JSONSchemaComponent) -> Self {
+    var copy = self
+    copy.schema = build().schemaValue.value
+    return copy
+  }
+
+  public func schema<T: Schemable>(_ type: T.Type) -> Self {
+    schema(type.schema.schemaValue.value)
+  }
+
+  public func location(_ location: String) -> Self {
+    var copy = self
+    copy.location = location
+    return copy
+  }
+
+  func finish() -> AsyncAPI.Parameter {
+    AsyncAPI.Parameter(
+      description: description,
+      schema: schema,
+      location: location
     )
   }
 }
