@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.0
 
 import PackageDescription
 
@@ -40,7 +40,7 @@ let package = Package(
       dependencies: [
         "AsyncAPIGenerator",
         .product(name: "JSONSchema", package: "swift-json-schema"),
-        .product(name: "JSONSchemaBuilder", package: "swift-json-schema")
+        .product(name: "JSONSchemaBuilder", package: "swift-json-schema"),
       ]
     ),
     .testTarget(
