@@ -1,5 +1,5 @@
 {
-  "originHash" : "011b206cdc9b4d2f492108312ab2619f8a79ec20783545280987cdb33a45762f",
+  "originHash" : "33c196e479c95e2b3e1db8a4facfbaa61b85bbd02782406923de9e67f9c2a03c",
   "pins" : [
     {
       "identity" : "swift-custom-dump",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing.git",
       "state" : {
-        "revision" : "37230a37e83f1b7023be08e1b1a2603fcb1567fb",
-        "version" : "1.18.4"
+        "revision" : "d7e40607dcd6bc26543f5d9433103f06e0b28f8f",
+        "version" : "1.18.6"
       }
     },
     {
