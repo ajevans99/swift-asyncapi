@@ -23,7 +23,8 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(url: "https://github.com/ajevans99/swift-json-schema.git", from: "0.5.1"),
+    .package(url: "https://github.com/ajevans99/swift-json-schema.git", from: "0.13.0"),
+    .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.0"),
     .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.16.0"),
     .package(url: "https://github.com/jpsim/Yams.git", from: "6.0.0"),
   ],
@@ -41,6 +42,7 @@ let package = Package(
         "AsyncAPIGenerator",
         .product(name: "JSONSchema", package: "swift-json-schema"),
         .product(name: "JSONSchemaBuilder", package: "swift-json-schema"),
+        .product(name: "OrderedCollections", package: "swift-collections"),
       ]
     ),
     .testTarget(
