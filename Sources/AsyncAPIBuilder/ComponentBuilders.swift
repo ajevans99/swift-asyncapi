@@ -1,6 +1,7 @@
 import AsyncAPIGenerator
 import JSONSchema
 import JSONSchemaBuilder
+import OrderedCollections
 
 public struct ComponentsBuilder {
   var schemas: [String: JSONValue] = [:]
